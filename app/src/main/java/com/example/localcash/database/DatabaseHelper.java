@@ -1,0 +1,38 @@
+package com.example.localcash.database;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class DatabaseHelper extends SQLiteOpenHelper {
+
+    private static final String DATABASE_NAME = "localcash.db";
+    private static final int DATABASE_VERSION = 1;
+
+    public DatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE Cuentas (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, saldo REAL)");
+
+        db.execSQL("CREATE TABLE Movimientos (id INTEGER PRIMARY KEY AUTOINCREMENT, cuenta_id INTEGER, tipo TEXT, monto REAL, latitud REAL, longitud REAL, fecha TEXT, FOREIGN KEY(cuenta_id) REFERENCES Cuentas(id))");
+
+        db.execSQL("CREATE TABLE Contactos (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT)");
+
+        db.execSQL("CREATE TABLE Compras (id INTEGER PRIMARY KEY AUTOINCREMENT, descripcion TEXT, monto REAL, fecha TEXT, es_agendada INTEGER)");
+
+        db.execSQL("CREATE TABLE Deudas (id INTEGER PRIMARY KEY AUTOINCREMENT, compra_id INTEGER, contacto_id INTEGER, monto_adeudado REAL, estado_pago INTEGER, FOREIGN KEY(compra_id) REFERENCES Compras(id), FOREIGN KEY(contacto_id) REFERENCES Contactos(id))");
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS Deudas");
+        db.execSQL("DROP TABLE IF EXISTS Compras");
+        db.execSQL("DROP TABLE IF EXISTS Contactos");
+        db.execSQL("DROP TABLE IF EXISTS Movimientos");
+        db.execSQL("DROP TABLE IF EXISTS Cuentas");
+        onCreate(db);
+    }
+}
