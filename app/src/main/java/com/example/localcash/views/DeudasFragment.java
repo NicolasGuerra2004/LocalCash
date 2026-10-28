@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.localcash.R;
 import com.example.localcash.adapters.DeudasAdapter;
 import com.example.localcash.database.DatabaseHelper;
-import com.example.localcash.models.Contacto;
 import com.example.localcash.models.Deuda;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.text.SimpleDateFormat;
@@ -110,7 +109,7 @@ public class DeudasFragment extends Fragment {
                         }
 
                         if (seleccionados > 0) {
-                            double montoPorPersona = montoTotal / seleccionados;
+                            double montoPorPersona = montoTotal / (seleccionados + 1);
                             String fecha = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
 
                             long compraId = dbHelper.insertarCompra(descripcion, montoTotal, fecha, 0);
