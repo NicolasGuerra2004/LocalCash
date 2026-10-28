@@ -1,66 +1,111 @@
 package com.example.localcash.views;
 
+import android.app.AlertDialog;
+import android.database.Cursor;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.localcash.R;
+import com.example.localcash.adapters.ComprasAdapter;
+import com.example.localcash.database.DatabaseHelper;
+import com.example.localcash.models.Compra;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ComprasFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ComprasFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private RecyclerView rvCompras;
+    private ComprasAdapter adapter;
+    private List<Compra> compraList;
+    private DatabaseHelper dbHelper;
+    private int tipoFiltroActual = 0;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ComprasFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ComprasFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ComprasFragment newInstance(String param1, String param2) {
-        ComprasFragment fragment = new ComprasFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_compras, container, false);
+
+        rvCompras = view.findViewById(R.id.rvCompras);
+        RadioGroup rgFiltro = view.findViewById(R.id.rgFiltroCompras);
+        FloatingActionButton fabAgregar = view.findViewById(R.id.fabAgregarCompra);
+
+        dbHelper = new DatabaseHelper(getContext());
+        compraList = new ArrayList<>();
+        adapter = new ComprasAdapter(compraList);
+
+        rvCompras.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvCompras.setAdapter(adapter);
+
+        cargarCompras();
+
+        rgFiltro.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rbHistorial) {
+                tipoFiltroActual = 0;
+            } else if (checkedId == R.id.rbAgendadas) {
+                tipoFiltroActual = 1;
+            }
+            cargarCompras();
+        });
+
+        fabAgregar.setOnClickListener(v -> mostrarDialogoAgregar());
+
+        return view;
+    }
+
+    private void cargarCompras() {
+        compraList.clear();
+        Cursor cursor = dbHelper.obtenerCompras(tipoFiltroActual);
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(0);
+                String descripcion = cursor.getString(1);
+                double monto = cursor.getDouble(2);
+                String fecha = cursor.getString(3);
+                int esAgendada = cursor.getInt(4);
+                compraList.add(new Compra(id, descripcion, monto, fecha, esAgendada));
+            } while (cursor.moveToNext());
         }
+        cursor.close();
+        adapter.notifyDataSetChanged();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_compras, container, false);
+    private void mostrarDialogoAgregar() {
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_agregar_compra, null);
+        EditText etDescripcion = dialogView.findViewById(R.id.etDescripcionCompra);
+        EditText etMonto = dialogView.findViewById(R.id.etMontoCompra);
+        CheckBox cbAgendada = dialogView.findViewById(R.id.cbEsAgendada);
+
+        cbAgendada.setChecked(tipoFiltroActual == 1);
+
+        new AlertDialog.Builder(getContext())
+                .setTitle("Nueva Compra")
+                .setView(dialogView)
+                .setPositiveButton("Guardar", (dialog, which) -> {
+                    String descripcion = etDescripcion.getText().toString().trim();
+                    String montoStr = etMonto.getText().toString().trim();
+                    if (!descripcion.isEmpty() && !montoStr.isEmpty()) {
+                        double monto = Double.parseDouble(montoStr);
+                        int esAgendada = cbAgendada.isChecked() ? 1 : 0;
+                        String fecha = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+
+                        dbHelper.insertarCompra(descripcion, monto, fecha, esAgendada);
+                        cargarCompras();
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 }

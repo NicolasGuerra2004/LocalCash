@@ -45,6 +45,19 @@ public class MovimientosAdapter extends RecyclerView.Adapter<MovimientosAdapter.
         } else {
             holder.ivIconoMapa.setVisibility(View.GONE);
         }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (movimiento.getLatitud() != 0.0 && movimiento.getLongitud() != 0.0) {
+                android.content.Intent intent = new android.content.Intent(v.getContext(), com.example.localcash.MapaMovimientoActivity.class);
+                intent.putExtra("LATITUD", movimiento.getLatitud());
+                intent.putExtra("LONGITUD", movimiento.getLongitud());
+                intent.putExtra("TIPO", movimiento.getTipo());
+                intent.putExtra("MONTO", movimiento.getMonto());
+                v.getContext().startActivity(intent);
+            } else {
+                android.widget.Toast.makeText(v.getContext(), "Este movimiento no tiene ubicación guardada", android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

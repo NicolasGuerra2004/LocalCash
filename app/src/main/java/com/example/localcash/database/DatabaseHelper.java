@@ -73,4 +73,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM Movimientos WHERE cuenta_id = ? ORDER BY id DESC", new String[]{String.valueOf(cuentaId)});
     }
+
+    public long insertarCompra(String descripcion, double monto, String fecha, int esAgendada) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("descripcion", descripcion);
+        values.put("monto", monto);
+        values.put("fecha", fecha);
+        values.put("es_agendada", esAgendada);
+        return db.insert("Compras", null, values);
+    }
+
+    public Cursor obtenerCompras(int esAgendada) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM Compras WHERE es_agendada = ? ORDER BY id DESC", new String[]{String.valueOf(esAgendada)});
+    }
 }
