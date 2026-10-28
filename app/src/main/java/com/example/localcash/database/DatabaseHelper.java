@@ -88,4 +88,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM Compras WHERE es_agendada = ? ORDER BY id DESC", new String[]{String.valueOf(esAgendada)});
     }
+
+    public long insertarContacto(String nombre) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("nombre", nombre);
+        return db.insert("Contactos", null, values);
+    }
+
+    public Cursor obtenerContactos() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM Contactos ORDER BY nombre ASC", null);
+    }
+
 }
