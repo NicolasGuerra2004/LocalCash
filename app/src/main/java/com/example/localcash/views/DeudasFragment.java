@@ -1,66 +1,133 @@
 package com.example.localcash.views;
 
+import android.app.AlertDialog;
+import android.database.Cursor;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.localcash.R;
+import com.example.localcash.adapters.DeudasAdapter;
+import com.example.localcash.database.DatabaseHelper;
+import com.example.localcash.models.Contacto;
+import com.example.localcash.models.Deuda;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link DeudasFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class DeudasFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private RecyclerView rvDeudas;
+    private DeudasAdapter adapter;
+    private List<Deuda> deudaList;
+    private DatabaseHelper dbHelper;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public DeudasFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DeudasFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static DeudasFragment newInstance(String param1, String param2) {
-        DeudasFragment fragment = new DeudasFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_deudas, container, false);
+
+        rvDeudas = view.findViewById(R.id.rvDeudas);
+        FloatingActionButton fabAgregar = view.findViewById(R.id.fabAgregarDeuda);
+
+        dbHelper = new DatabaseHelper(getContext());
+        deudaList = new ArrayList<>();
+        adapter = new DeudasAdapter(deudaList);
+
+        rvDeudas.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvDeudas.setAdapter(adapter);
+
+        cargarDeudas();
+
+        fabAgregar.setOnClickListener(v -> mostrarDialogoAgregar());
+
+        return view;
+    }
+
+    private void cargarDeudas() {
+        deudaList.clear();
+        Cursor cursor = dbHelper.obtenerDeudasDetalle();
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(0);
+                String descripcion = cursor.getString(1);
+                String nombreContacto = cursor.getString(2);
+                double monto = cursor.getDouble(3);
+                int estadoPago = cursor.getInt(4);
+                deudaList.add(new Deuda(id, descripcion, nombreContacto, monto, estadoPago));
+            } while (cursor.moveToNext());
         }
+        cursor.close();
+        adapter.notifyDataSetChanged();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_deudas, container, false);
+    private void mostrarDialogoAgregar() {
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_agregar_deuda, null);
+        EditText etDescripcion = dialogView.findViewById(R.id.etDeudaDescripcion);
+        EditText etMontoTotal = dialogView.findViewById(R.id.etDeudaMontoTotal);
+        LinearLayout llContactosContainer = dialogView.findViewById(R.id.llContactosContainer);
+
+        List<CheckBox> checkBoxes = new ArrayList<>();
+        Cursor cContactos = dbHelper.obtenerContactos();
+        if (cContactos.moveToFirst()) {
+            do {
+                int id = cContactos.getInt(0);
+                String nombre = cContactos.getString(1);
+                CheckBox cb = new CheckBox(getContext());
+                cb.setText(nombre);
+                cb.setTag(id);
+                llContactosContainer.addView(cb);
+                checkBoxes.add(cb);
+            } while (cContactos.moveToNext());
+        }
+        cContactos.close();
+
+        new AlertDialog.Builder(getContext())
+                .setTitle("Dividir Gasto")
+                .setView(dialogView)
+                .setPositiveButton("Guardar", (dialog, which) -> {
+                    String descripcion = etDescripcion.getText().toString().trim();
+                    String montoStr = etMontoTotal.getText().toString().trim();
+
+                    if (!descripcion.isEmpty() && !montoStr.isEmpty()) {
+                        double montoTotal = Double.parseDouble(montoStr);
+
+                        int seleccionados = 0;
+                        for (CheckBox cb : checkBoxes) {
+                            if (cb.isChecked()) seleccionados++;
+                        }
+
+                        if (seleccionados > 0) {
+                            double montoPorPersona = montoTotal / seleccionados;
+                            String fecha = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+
+                            long compraId = dbHelper.insertarCompra(descripcion, montoTotal, fecha, 0);
+
+                            for (CheckBox cb : checkBoxes) {
+                                if (cb.isChecked()) {
+                                    int contactoId = (int) cb.getTag();
+                                    dbHelper.insertarDeuda(compraId, contactoId, montoPorPersona);
+                                }
+                            }
+                            cargarDeudas();
+                        } else {
+                            Toast.makeText(getContext(), "Debes seleccionar al menos un contacto", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 }

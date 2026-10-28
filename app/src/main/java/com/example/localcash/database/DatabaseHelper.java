@@ -101,4 +101,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.rawQuery("SELECT * FROM Contactos ORDER BY nombre ASC", null);
     }
 
+    public long insertarDeuda(long compraId, int contactoId, double montoAdeudado) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("compra_id", compraId);
+        values.put("contacto_id", contactoId);
+        values.put("monto_adeudado", montoAdeudado);
+        values.put("estado_pago", 0);
+        return db.insert("Deudas", null, values);
+    }
+
+    public Cursor obtenerDeudasDetalle() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT d.id, c.descripcion, co.nombre, d.monto_adeudado, d.estado_pago " +
+                "FROM Deudas d " +
+                "INNER JOIN Compras c ON d.compra_id = c.id " +
+                "INNER JOIN Contactos co ON d.contacto_id = co.id " +
+                "ORDER BY d.id DESC";
+        return db.rawQuery(query, null);
+    }
+
 }
