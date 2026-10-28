@@ -3,6 +3,8 @@ package com.example.localcash.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.content.ContentValues;
+import android.database.Cursor;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -34,5 +36,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS Movimientos");
         db.execSQL("DROP TABLE IF EXISTS Cuentas");
         onCreate(db);
+    }
+    public long insertarCuenta(String nombre, double saldo) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("nombre", nombre);
+        values.put("saldo", saldo);
+        return db.insert("Cuentas", null, values);
+    }
+
+    public Cursor obtenerCuentas() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM Cuentas", null);
     }
 }
