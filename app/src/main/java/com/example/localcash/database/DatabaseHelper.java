@@ -49,4 +49,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery("SELECT * FROM Cuentas", null);
     }
+
+    public long insertarMovimiento(int cuentaId, String tipo, double monto, double latitud, double longitud, String fecha) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("cuenta_id", cuentaId);
+        values.put("tipo", tipo);
+        values.put("monto", monto);
+        values.put("latitud", latitud);
+        values.put("longitud", longitud);
+        values.put("fecha", fecha);
+
+        if (tipo.equals("Ingreso")) {
+            db.execSQL("UPDATE Cuentas SET saldo = saldo + " + monto + " WHERE id = " + cuentaId);
+        } else if (tipo.equals("Egreso")) {
+            db.execSQL("UPDATE Cuentas SET saldo = saldo - " + monto + " WHERE id = " + cuentaId);
+        }
+
+        return db.insert("Movimientos", null, values);
+    }
+
+    public Cursor obtenerMovimientos(int cuentaId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM Movimientos WHERE cuenta_id = ? ORDER BY id DESC", new String[]{String.valueOf(cuentaId)});
+    }
 }

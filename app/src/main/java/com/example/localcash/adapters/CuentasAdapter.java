@@ -30,6 +30,13 @@ public class CuentasAdapter extends RecyclerView.Adapter<CuentasAdapter.CuentaVi
         Cuenta cuenta = cuentaList.get(position);
         holder.tvNombreCuenta.setText(cuenta.getNombre());
         holder.tvSaldoCuenta.setText("$" + cuenta.getSaldo());
+
+        holder.itemView.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(v.getContext(), com.example.localcash.MovimientosActivity.class);
+            intent.putExtra("CUENTA_ID", cuenta.getId());
+            intent.putExtra("CUENTA_NOMBRE", cuenta.getNombre());
+            v.getContext().startActivity(intent);
+        });
     }
 
     @Override

@@ -52,6 +52,12 @@ public class CuentasFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        cargarCuentas();
+    }
+
     private void cargarCuentas() {
         cuentaList.clear();
         double total = 0;
