@@ -1,24 +1,49 @@
 package com.example.localcash;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.localcash.views.CuentasFragment;
+import com.example.localcash.views.ComprasFragment;
+import com.example.localcash.views.DeudasFragment;
+import com.example.localcash.views.ContactosFragment;
 
 public class DashboardActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_dashboard);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+
+        bottomNav.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.nav_cuentas) {
+                selectedFragment = new CuentasFragment();
+            } else if (itemId == R.id.nav_compras) {
+                selectedFragment = new ComprasFragment();
+            } else if (itemId == R.id.nav_deudas) {
+                selectedFragment = new DeudasFragment();
+            } else if (itemId == R.id.nav_contactos) {
+                selectedFragment = new ContactosFragment();
+            }
+
+            if (selectedFragment != null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, selectedFragment)
+                        .commit();
+            }
+            return true;
         });
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new CuentasFragment())
+                    .commit();
+        }
     }
 }
