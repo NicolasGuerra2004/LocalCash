@@ -1,4 +1,4 @@
-package com.example.localcash.adapters;
+package com.guerra.localcash.adapters;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -8,8 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.localcash.R;
-import com.example.localcash.models.Movimiento;
+import com.guerra.localcash.R;
+import com.guerra.localcash.models.Movimiento;
 import java.util.List;
 
 public class MovimientosAdapter extends RecyclerView.Adapter<MovimientosAdapter.MovimientoViewHolder> {
@@ -48,7 +48,7 @@ public class MovimientosAdapter extends RecyclerView.Adapter<MovimientosAdapter.
 
         holder.itemView.setOnClickListener(v -> {
             if (movimiento.getLatitud() != 0.0 && movimiento.getLongitud() != 0.0) {
-                android.content.Intent intent = new android.content.Intent(v.getContext(), com.example.localcash.MapaMovimientoActivity.class);
+                android.content.Intent intent = new android.content.Intent(v.getContext(), com.guerra.localcash.MapaMovimientoActivity.class);
                 intent.putExtra("LATITUD", movimiento.getLatitud());
                 intent.putExtra("LONGITUD", movimiento.getLongitud());
                 intent.putExtra("TIPO", movimiento.getTipo());

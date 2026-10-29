@@ -1,4 +1,4 @@
-package com.example.localcash;
+package com.guerra.localcash;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -15,15 +15,15 @@ import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.localcash.adapters.MovimientosAdapter;
-import com.example.localcash.database.DatabaseHelper;
-import com.example.localcash.models.Movimiento;
+import com.guerra.localcash.adapters.MovimientosAdapter;
+import com.guerra.localcash.database.DatabaseHelper;
+import com.guerra.localcash.models.Movimiento;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

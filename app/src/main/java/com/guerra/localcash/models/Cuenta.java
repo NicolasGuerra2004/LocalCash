@@ -1,4 +1,4 @@
-package com.example.localcash.models;
+package com.guerra.localcash.models;
 
 public class Cuenta {
     private int id;

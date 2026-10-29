@@ -1,7 +1,6 @@
-package com.example.localcash;
+package com.guerra.localcash;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import org.osmdroid.config.Configuration;
@@ -18,8 +17,7 @@ public class MapaMovimientoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Configuration.getInstance().load(getApplicationContext(), PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
-        Configuration.getInstance().setUserAgentValue(getPackageName());
+        Configuration.getInstance().setUserAgentValue("LocalCash_Nicolas/1.0 (n@gmail.com)");        Configuration.getInstance().setUserAgentValue(getPackageName());
         setContentView(R.layout.activity_mapa_movimiento);
 
         map = findViewById(R.id.mapView);

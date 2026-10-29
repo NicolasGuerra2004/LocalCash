@@ -1,13 +1,13 @@
-package com.example.localcash;
+package com.guerra.localcash;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.example.localcash.views.CuentasFragment;
-import com.example.localcash.views.ComprasFragment;
-import com.example.localcash.views.DeudasFragment;
-import com.example.localcash.views.ContactosFragment;
+import com.guerra.localcash.views.CuentasFragment;
+import com.guerra.localcash.views.ComprasFragment;
+import com.guerra.localcash.views.DeudasFragment;
+import com.guerra.localcash.views.ContactosFragment;
 
 public class DashboardActivity extends AppCompatActivity {
 

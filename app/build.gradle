@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    namespace 'com.example.localcash'
+    namespace 'com.guerra.localcash'
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId "com.example.localcash"
+        applicationId "com.nicolas.localcash"
         minSdk 27
         targetSdk 37
         versionCode 1

@@ -1,4 +1,4 @@
-package com.example.localcash.adapters;
+package com.guerra.localcash.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.localcash.R;
-import com.example.localcash.models.Cuenta;
+import com.guerra.localcash.R;
+import com.guerra.localcash.models.Cuenta;
 import java.util.List;
 
 public class CuentasAdapter extends RecyclerView.Adapter<CuentasAdapter.CuentaViewHolder> {
@@ -32,7 +32,7 @@ public class CuentasAdapter extends RecyclerView.Adapter<CuentasAdapter.CuentaVi
         holder.tvSaldoCuenta.setText("$" + cuenta.getSaldo());
 
         holder.itemView.setOnClickListener(v -> {
-            android.content.Intent intent = new android.content.Intent(v.getContext(), com.example.localcash.MovimientosActivity.class);
+            android.content.Intent intent = new android.content.Intent(v.getContext(), com.guerra.localcash.MovimientosActivity.class);
             intent.putExtra("CUENTA_ID", cuenta.getId());
             intent.putExtra("CUENTA_NOMBRE", cuenta.getNombre());
             v.getContext().startActivity(intent);

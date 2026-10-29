@@ -1,4 +1,4 @@
-package com.example.localcash.views;
+package com.guerra.localcash.views;
 
 import android.app.AlertDialog;
 import android.database.Cursor;
@@ -13,10 +13,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.localcash.R;
-import com.example.localcash.adapters.CuentasAdapter;
-import com.example.localcash.database.DatabaseHelper;
-import com.example.localcash.models.Cuenta;
+import com.guerra.localcash.R;
+import com.guerra.localcash.adapters.CuentasAdapter;
+import com.guerra.localcash.database.DatabaseHelper;
+import com.guerra.localcash.models.Cuenta;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;

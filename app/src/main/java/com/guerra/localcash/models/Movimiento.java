@@ -1,4 +1,4 @@
-package com.example.localcash.models;
+package com.guerra.localcash.models;
 
 public class Movimiento {
     private int id;

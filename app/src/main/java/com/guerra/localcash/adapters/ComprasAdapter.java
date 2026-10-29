@@ -1,4 +1,4 @@
-package com.example.localcash.adapters;
+package com.guerra.localcash.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.localcash.R;
-import com.example.localcash.models.Compra;
+import com.guerra.localcash.R;
+import com.guerra.localcash.models.Compra;
 import java.util.List;
 
 public class ComprasAdapter extends RecyclerView.Adapter<ComprasAdapter.CompraViewHolder> {

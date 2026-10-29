@@ -1,4 +1,4 @@
-package com.example.localcash;
+package com.guerra.localcash;
 
 import android.content.Intent;
 import android.os.Bundle;
